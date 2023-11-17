@@ -1,0 +1,407 @@
+doctype html
+html(lang="pt-BR")
+  head
+    meta(charset="UTF-8")
+    title Boletos
+    style
+      include assets/css/font-load.css
+    style(type="text/css").
+      @media print {
+      .noprint {
+      display: none;
+      }
+      }
+      body {
+      background-color: #fff;
+      margin-right: 0;
+      }
+      .wrapper {
+      width: 666px;
+      }
+      .table-boleto {
+      font: 9px Arial;
+      width: 666px;
+      }
+      .table-boleto td.top-2 {
+      border-top-width: 2px;
+      }
+      .table-boleto td {
+      border-left: 1px solid #000;
+      border-top: 1px solid #000;
+      padding: 1px 4px;
+      }
+      .table-boleto td:last-child {
+      border-right: 1px solid #000;
+      }
+      .table-boleto .titulo {
+      color: #003;
+      }
+      .linha-pontilhada {
+      height: 15px;
+      color: #003;
+      font: 9px Arial;
+      width: 100%;
+      border-bottom: 1px dashed #000;
+      text-align: right;
+      margin-bottom: 10px;
+      }
+      .table-boleto .conteudo {
+      font: 700 10px Arial;
+      height: 13px;
+      }
+      .table-boleto .sacador {
+      display: inline;
+      margin-left: 5px;
+      }
+      .table-boleto .noleftborder {
+      border-left: none !important;
+      }
+      .table-boleto .notopborder {
+      border-top: none !important;
+      }
+      .table-boleto .norightborder {
+      border-right: none !important;
+      }
+      .table-boleto .noborder {
+      border: none !important;
+      }
+      .table-boleto .bottomborder {
+      border-bottom: 1px solid #000 !important;
+      }
+      .table-boleto .rtl {
+      text-align: right;
+      }
+      .table-boleto .logobanco {
+      display: inline-block;
+      max-width: 150px;
+      }
+      .table-boleto .logocontainer {
+      width: 257px;
+      display: inline-block;
+      }
+      .table-boleto .logobanco img {
+      margin-bottom: -5px;
+      }
+      .table-boleto .codbanco {
+      font: 700 20px Arial;
+      padding: 1px 5px;
+      display: inline;
+      border-left: 2px solid #000;
+      border-right: 2px solid #000;
+      width: 51px;
+      margin-left: 0px;
+      }
+      .table-boleto .linha-digitavel {
+      font: 700 14px Arial;
+      display: inline-block;
+      width: 406px;
+      text-align: right;
+      }
+      .table-boleto .nopadding {
+      padding: 0 !important;
+      }
+      .table-boleto .caixa-gray-bg {
+      font-weight: 700;
+      background: #ccc;
+      }
+      .info,
+      .info-empresa {
+      font: 11px Arial;
+      }
+      .header {
+      font: 700 13px Arial;
+      display: block;
+      margin: 4px;
+      }
+      .barcode-box {
+        position: relative;
+      }
+      .barcode {
+        font-size: 30px;
+        height: 50px;
+        font-family: 'Code 2 of 5 interleaved', sans-serif;
+        transform: scale(1, 1.5);
+        top: 20px;
+        position: absolute;
+
+      }
+      .barcode div {
+      display: inline-block;
+      height: 100%;
+      }
+      .barcode .black {
+      border-color: #000;
+      border-left-style: solid;
+      width: 0;
+      }
+      .barcode .white {
+      background: #fff;
+      }
+      .barcode .thin.black {
+      border-left-width: 1px;
+      }
+      .barcode .large.black {
+      border-left-width: 3px;
+      }
+      .barcode .thin.white {
+      width: 1px;
+      }
+      .barcode .large.white {
+      width: 3px;
+      }
+      .table-boleto tr.duas-linhas {
+      vertical-align: top;
+      }
+  body
+    .wrapper
+      .noprint.info
+        h2(style='text-align:center; margin-bottom: 20px') Instruções de Impressão
+        ul
+          li
+            | Imprima em impressora jato de tinta (ink jet) ou laser em qualidade
+            | normal ou alta (Não use modo econômico).
+          li
+            | Utilize folha A4 (210 x 297 mm) ou Carta (216 x 279 mm) e margens
+            | mínimas à esquerda e à direita do formulário.
+          li
+            | Corte na linha indicada. Não rasure, risque, fure ou dobre a região
+            | onde se encontra o código de barras.
+          li
+            | Caso não apareça o código de barras no final, pressione F5 para
+            | atualizar esta tela.
+          li
+            | Caso tenha problemas ao imprimir, copie a sequencia numérica abaixo
+            | e pague no caixa eletrônico ou no internet banking:
+        table(style='margin: 40px 4px; font-size: 13px; font-family: Arial;')
+          tbody
+            tr
+              td(colspan="2", width="250") Linha Digitável
+              td(style='font-weight: 700;') #{linhaDigitavelFormatado}
+            tr
+              td(colspan="2", width="250") Número
+              td(style='font-weight: 700;') #{numeroContratoCobranca}
+            tr
+              td(colspan="2", width="250") Valor
+              td(style='font-weight: 700;') #{parseFloat(valorOriginalTituloCobranca).toLocaleString('pt-br', { style: 'currency', currency: 'BRL' })}
+        br
+      .linha-pontilhada(style="margin-bottom: 20px;")
+        | Recibo do pagador
+      .info-empresa
+        div(style="display: inline-block;")
+          img(alt="logo",width="200px", style="margin-right: 50px", src=logotipo)
+        div(style="display: inline-block; vertical-align: super;")
+          div
+            strong #{razaoSocial}
+          div #{cnpj}
+          div
+            | Rua Alceu Amoroso Lima, 440, Edifício Salvador Business & Flat,
+            | sala 502
+          div 41820-770 - Salvador - BA
+      br
+      table.table-boleto(cellpadding="0", cellspacing="0", border="0")
+        tbody
+          tr
+            td.noborder.nopadding(valign="bottom", colspan="8")
+              .logocontainer
+                .logobanco
+                  img(src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAAAoBAMAAADu7x7UAAAAHlBMVEX/8AD//wAAMc0ARLkAWqLDzwF+rD8Aen/o5ABDlGCxFC/XAAADPklEQVR4Xu2UwVOjSBTGu3eSRG/dVQPEa9OB4godmNwUOjN6C0ZichMwrceEaOHetCYxm5uJq7N/7jZhLXPZ2UsuW+NXFPXR9fjx3lf1AP8zfehDCAEA0U5Q+DJEoPGyCxg8J20Iz5o7YEHV5nZHJccFC+L/KAYA/+SbSuYNpvrLj3uwyPP8Gv0UdZXnv4f/HlbqHGHFN0MEZ7qt03uAMYAYQSwNkg7LmjcHE4cQA0sBUB4hiN5nOaecP4hl0O7CGRulfgzECNREWB3BYR7DWv6KQF+IECg/XiFMvWjKqkKMEBDXQBGi27+ujUCphs+D9pKsUnsMZ06o2SuFWKhCJpqpEt9EGSUruHaIi9c6GUsW/s7rOtFjlRhoSsgkaf5mvuWy0L25b/V9975kxSpjsM5amvXZ3Cdz/WLawuvOOd2zx6mBJavH6rQfHB5QT6FfozBpVaw3Fr68SOkgM0MgZ3ydnsC6F4R1ZmnGd0PhffrQc3FyrDqRE84snHIRdDSK14eVb7xKjzBMt1gAn5GnVI+RZHGi3+FeJ4vrjO8bPRcBbcNadxSnr4czU7IIjTUKs6PTW7/reA94mwWXpLMgdwJv+rrhYTLJJpqRiYIFC5aBk4JFS5aYtjXzioVrWXZJTuA2S/Xbj3Zrn9yif7LPJsmx1kzygoW3+pIsr8hr5izNXhP58fqw8Sc53GLtZU7om1HA7aeCperjgHNXa1a423MbYsE2fb3P6OGKM6QHpsI4b+HG1OhtsZ7Zy+XqlHF2UbBm/ojxG08zNObK7ImgD6krk1aduROfWQUrDYZUcWr05sbCuFewjLe1QhmNkcKdMZJ5fQvsIZUhLQyFGZ/NIanqL9kXvD5JzYZ9+9zECc8dsy6zz01cYUJMm6etT564KKOvPdpmuPS/brJ32G3FRKp+ZaCppfrExc9Ej+E6oHc4JfoKJtxhY43CnmOgA0oIWyWtTwE52rCq/pdzcuJbsPBRNIDzAQDRHwMwH8DHYnOE3PZ5NMDSjQonbTWSpQOwF8kHNO/K17oblqr/hVOdhuUPp1hf6TBAAKP33d66lWfyKsrK+uKsZHUQULInBHagKgQAVjHYmSD4dfShD/0N5are+zdms9AAAAAASUVORK5CYII=", alt="logo do banco")
+                .codbanco #{textoCodigoBarrasTituloCobranca.substring(0,3)}-#{textoCodigoBarrasTituloCobranca.substring(3,4)}
+              .linha-digitavel
+                | #{linhaDigitavelFormatado}
+          tr
+            td.top-2(colspan="2", width="250")
+              .titulo Beneficiário
+              .conteudo
+                | #{razaoSocial}
+            td.top-2
+              .titulo CPF/CNPJ
+              .conteudo #{cnpj}
+            td.top-2(width="120")
+              .titulo Ag/Cod. Beneficiário
+              .conteudo.rtl #{agencia}-#{digitoAgencia} / #{conta}
+            td.top-2(width="120")
+              .titulo Vencimento
+              .conteudo.rtl #{dataVencimentoTituloCobranca.replace(/\./gim, '/')}
+          tr
+            td(colspan="3")
+              .titulo Pagador
+              .conteudo
+                | #{sacado.nomeSacadoCobranca} / CPF:  #{sacado.numeroInscricaoSacadoCobrancaFormatado}
+            td
+              .titulo Nº documento
+              .conteudo.rtl
+            td
+              .titulo Nosso número
+              .conteudo.rtl #{nossoNumero}
+          tr
+            td
+              .titulo Espécie
+              .conteudo R$
+            td
+              .titulo Quantidade
+              .conteudo.rtl
+            td
+              .titulo Valor
+              .conteudo.rtl
+            td
+              .titulo (-) Descontos / Abatimentos
+              .conteudo.rtl
+            td
+              .titulo (=) Valor Documento
+              .conteudo.rtl #{parseFloat(valorOriginalTituloCobranca).toFixed(2).replace(/\./, ',')}
+          tr
+            td(colspan="2")
+              .conteudo
+              .titulo Demonstrativo
+            td
+              .titulo (-) Outras deduções
+              .conteudo
+            td
+              .titulo (+) Outros acréscimos
+              .conteudo.rtl
+            td
+              .titulo (=) Valor cobrado
+              .conteudo.rtl
+          tr
+            td(colspan="4").noleftborder
+              .conteudo(style="margin-top: 10px;")
+            td.noleftborder.norightborder
+              .titulo Autenticação mecânica
+          tr
+            td.notopborder(colspan="5").noleftborder.norightborder
+              .conteudo
+          tr
+            td.notopborder(colspan="5").noleftborder.norightborder
+              .conteudo
+          tr
+            td.notopborder(colspan="5").noleftborder.norightborder
+              .conteudo
+          tr
+            td.noborder(colspan="5")
+              .conteudo(style="margin-bottom: 10px;")
+      br
+      .linha-pontilhada Corte na linha pontilhada
+      br
+      // Ficha de compensação
+      table.table-boleto(cellpadding="0", cellspacing="0", border="0")
+        tbody
+          tr
+            td.noborder.nopadding(valign="bottom", colspan="8")
+              .logocontainer
+                .logobanco
+                  img(src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAAAoBAMAAADu7x7UAAAAHlBMVEX/8AD//wAAMc0ARLkAWqLDzwF+rD8Aen/o5ABDlGCxFC/XAAADPklEQVR4Xu2UwVOjSBTGu3eSRG/dVQPEa9OB4godmNwUOjN6C0ZichMwrceEaOHetCYxm5uJq7N/7jZhLXPZ2UsuW+NXFPXR9fjx3lf1AP8zfehDCAEA0U5Q+DJEoPGyCxg8J20Iz5o7YEHV5nZHJccFC+L/KAYA/+SbSuYNpvrLj3uwyPP8Gv0UdZXnv4f/HlbqHGHFN0MEZ7qt03uAMYAYQSwNkg7LmjcHE4cQA0sBUB4hiN5nOaecP4hl0O7CGRulfgzECNREWB3BYR7DWv6KQF+IECg/XiFMvWjKqkKMEBDXQBGi27+ujUCphs+D9pKsUnsMZ06o2SuFWKhCJpqpEt9EGSUruHaIi9c6GUsW/s7rOtFjlRhoSsgkaf5mvuWy0L25b/V9975kxSpjsM5amvXZ3Cdz/WLawuvOOd2zx6mBJavH6rQfHB5QT6FfozBpVaw3Fr68SOkgM0MgZ3ydnsC6F4R1ZmnGd0PhffrQc3FyrDqRE84snHIRdDSK14eVb7xKjzBMt1gAn5GnVI+RZHGi3+FeJ4vrjO8bPRcBbcNadxSnr4czU7IIjTUKs6PTW7/reA94mwWXpLMgdwJv+rrhYTLJJpqRiYIFC5aBk4JFS5aYtjXzioVrWXZJTuA2S/Xbj3Zrn9yif7LPJsmx1kzygoW3+pIsr8hr5izNXhP58fqw8Sc53GLtZU7om1HA7aeCperjgHNXa1a423MbYsE2fb3P6OGKM6QHpsI4b+HG1OhtsZ7Zy+XqlHF2UbBm/ojxG08zNObK7ImgD6krk1aduROfWQUrDYZUcWr05sbCuFewjLe1QhmNkcKdMZJ5fQvsIZUhLQyFGZ/NIanqL9kXvD5JzYZ9+9zECc8dsy6zz01cYUJMm6etT564KKOvPdpmuPS/brJ32G3FRKp+ZaCppfrExc9Ej+E6oHc4JfoKJtxhY43CnmOgA0oIWyWtTwE52rCq/pdzcuJbsPBRNIDzAQDRHwMwH8DHYnOE3PZ5NMDSjQonbTWSpQOwF8kHNO/K17oblqr/hVOdhuUPp1hf6TBAAKP33d66lWfyKsrK+uKsZHUQULInBHagKgQAVjHYmSD4dfShD/0N5are+zdms9AAAAAASUVORK5CYII=", alt="logo do banco")
+                .codbanco #{textoCodigoBarrasTituloCobranca.substring(0,3)}-#{textoCodigoBarrasTituloCobranca.substring(3,4)}
+              .linha-digitavel
+                | #{linhaDigitavelFormatado}
+          tr
+            td.top-2(colspan="7")
+              .titulo Local de pagamento
+              .conteudo
+                | Pagável em qualquer agência bancária até o vencimento.
+            td.top-2(width="180")
+              .titulo Vencimento
+              .conteudo.rtl #{dataVencimentoTituloCobranca.replace(/\./gim, '/')}
+          tr
+            td(colspan="7")
+              .titulo Beneficiário
+              .conteudo
+                | #{razaoSocial} LTDA / CNPJ:
+                | #{cnpj}
+            td
+              .titulo Agência/Código beneficiário
+              .conteudo.rtl #{agencia}-#{digitoAgencia} / #{conta}
+          tr
+            td(width="110", colspan="2")
+              .titulo Data do documento
+              .conteudo #{dataEmissaoTituloCobranca.replace(/\./gim, '/')}
+            td(width="120", colspan="2")
+              .titulo Nº documento
+              .conteudo
+            td(width="60")
+              .titulo Espécie doc.
+              .conteudo DM
+            td
+              .titulo Aceite
+              .conteudo #{codigoAceiteTituloCobranca}
+            td(width="110")
+              .titulo Data processamento
+              .conteudo #{dataRegistroTituloCobranca.replace(/\./gim, '/')}
+            td
+              .titulo Nosso número
+              .conteudo.rtl #{nossoNumero}
+          tr
+            td(colspan="2")
+              .titulo Uso do banco
+              .conteudo
+            td
+              .titulo Carteira
+              .conteudo 17
+            td(width="35")
+              .titulo Espécie
+              .conteudo R$
+            td(colspan="2")
+              .titulo Quantidade
+              .conteudo
+            td(width="110")
+              .titulo Valor
+              .conteudo
+            td
+              .titulo (=) Valor do Documento
+              .conteudo.rtl #{parseFloat(valorOriginalTituloCobranca).toFixed(2).replace(/\./gim, ',')}
+          tr
+            td(colspan="7")
+              .titulo
+                | Instruções de responsabilidade do beneficiário. Qualquer dúvida
+                | sobre este boleto, contate o beneficiário
+            td
+              .titulo (-) Descontos / Abatimentos
+              .conteudo.rtl
+          tr
+            td.notopborder(colspan="7")
+              .conteudo #{instrucoes || 'Boleto referente a parcela'+ vencimentoBoleto +'.Pagar até a data do vencimento.'}
+              .conteudo
+            td
+              .titulo (-) Outras deduções
+              .conteudo.rtl
+          tr
+            td.notopborder(colspan="7")
+              .conteudo
+              .conteudo
+            td
+              .titulo (+) Mora / Multa
+              .conteudo.rtl
+          tr
+            td.notopborder(colspan="7")
+              .conteudo
+              .conteudo
+            td
+              .titulo (+) Outros acréscimos
+              .conteudo.rtl
+          tr
+            td.notopborder(colspan="7")
+              .conteudo
+              .conteudo
+            td
+              .titulo (=) Valor cobrado
+              .conteudo.rtl
+          tr
+            td(colspan="7")
+              .titulo Pagador
+              .conteudo
+                | #{sacado.nomeSacadoCobranca} / CPF: #{sacado.numeroInscricaoSacadoCobranca}
+              .conteudo #{sacado.textoEnderecoSacadoCobranca}, #{sacado.numeroCepSacadoCobranca}
+              .conteudo #{sacado.nomeBairroSacadoCobranca} - #{sacado.nomeMunicipioSacadoCobranca} - #{sacado.siglaUnidadeFederacaoSacadoCobranca}
+            td.noleftborder
+              .titulo(style="margin-top: 50px;") Cód. Baixa
+          tr
+            td.noleftborder(colspan="6")
+              .titulo
+                | Sacador/Avalista
+                .conteudo.sacador
+            td.norightborder.noleftborder(colspan="2")
+              .conteudo.noborder.rtl
+                | Autenticação mecânica - Ficha de Compensação
+          tr
+            td.noborder(colspan="8").barcode-box
+              .barcode
+                | #{textoCodigoBarrasTituloCobranca}

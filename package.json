@@ -1,0 +1,50 @@
+{
+  "name": "api-bb",
+  "version": "1.0.0",
+  "description": "Servidor responsável por implementar a regra da empresa nas transações do Banco do Brasil",
+  "main": "src/server.js",
+  "scripts": {
+    "lint": "eslint --config=./.eslintrc.js --ext .js ./",
+    "build": "sucrase ./src -d ./dist --transforms imports",
+    "dev": "nodemon src/server.js -e js,pug",
+    "dev:debug": "nodemon --inspect src/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Grupo-Atemde/api-bb.git"
+  },
+  "author": "Saulo Lins",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Grupo-Atemde/api-bb/issues"
+  },
+  "homepage": "https://github.com/Grupo-Atemde/api-bb#readme",
+  "dependencies": {
+    "@sentry/node": "^5.20.1",
+    "axios": "^0.21.1",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-async-errors": "^3.1.1",
+    "moment": "^2.27.0",
+    "pug": "^3.0.0",
+    "puppeteer": "^5.2.1",
+    "qs": "^6.9.4",
+    "swagger-jsdoc": "^4.0.0",
+    "swagger-ui-express": "^4.1.4",
+    "vanilla-masker": "^1.2.0",
+    "yamljs": "^0.3.0",
+    "youch": "^2.0.10",
+    "yup": "^0.29.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.6.0",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-config-prettier": "^6.11.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-prettier": "^3.1.4",
+    "nodemon": "^2.0.4",
+    "prettier": "^2.0.5",
+    "sucrase": "^3.15.0"
+  }
+}

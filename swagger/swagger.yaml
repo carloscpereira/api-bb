@@ -1,0 +1,594 @@
+openapi: 3.0.0
+
+info:
+  title: API Banco Brasil
+  description: API de integração com o Banco do Brasil
+  version: 1.0.0
+  contact:
+    name: Grupo Atemde
+    email: contato@atemde.com.br
+
+servers:
+  - url: '{protocol}://idental.com.br/api/bb'
+    variables:
+      protocol:
+        enum:
+          - http
+          - https
+        default: https
+    description: Servidor de aplicações
+
+paths:
+  /boletos:
+    parameters:
+      - in: 'header'
+        name: 'AppAuthorization'
+        required: true
+        description: Chave de autorização da aplicação
+        schema:
+          type: string
+    post:
+      description: Cria um novo Boleto Bancário utilizando os recursos do Banco do Brasil
+      summary: Cria um novo Boleto
+      tags:
+        - Boleto
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBoleto'
+      responses:
+        200:
+          description: Boleto gerado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: integer
+                    nullable: true
+                    example: null
+                  data:
+                    $ref: '#/components/schemas/ResponseBoleto'
+    get:
+      description: Retorna uma lista com os ultimos 300 boletos criados
+      summary: Lista de Boletos
+      tags:
+        - Boleto
+      responses:
+        200:
+          description: Requisição realizada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: integer
+                    nullable: true
+                    example: null
+                  data:
+                    $ref: '#/components/schemas/ListBoleto'
+
+  /boletos/{nossoNumero}:
+    parameters:
+      - in: 'header'
+        name: 'AppAuthorization'
+        required: true
+        description: Chave de autorização da aplicação
+        schema:
+          type: string
+      - in: path
+        name: nossoNumero
+        required: true
+        description: Nosso número do boleto que deseja consultar
+        schema:
+          type: string
+    get:
+      description: Retorna todos os dados do boleto desejado
+      summary: Retorna Boleto
+      tags:
+        - Boleto
+      responses:
+        200:
+          description: Requisição realizada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: integer
+                    nullable: true
+                    example: null
+                  data:
+                    $ref: '#/components/schemas/ShowBoleto'
+
+components:
+  schemas:
+    CreateBoleto:
+      type: object
+      properties:
+        Idendificador:
+          type: number
+          description: Número de identificação do boleto
+        Modalidade:
+          type: string
+          enum: [1, 4]
+          description: 'Informe: 1 - Simples; 4 - Vinculada.'
+          default: 1
+        DataVencimento:
+          type: string
+          format: date
+          description: Data referente ao vencimento do boleto
+        ValorBruto:
+          type: number
+          format: double
+          description: Valor do boleto sem contabilizar descontos e abatimentos
+        ValorAbatimento:
+          type: number
+          format: double
+          description: Valor referente ao abatimento do boleto
+        QuantidadeDiasProtesto:
+          type: integer
+          description: Número de dias que o boleto poderá ser pago após a data de emissão
+        PagamentoAtrasado:
+          type: string
+          enum: ['S', 'N']
+          description: Informe de o boleto poderá ser pago após a data de vencimento. S - Sim; N - Não
+        LimiteRecebimento:
+          type: integer
+          minimum: 1
+          description: Informe a quantidade de dias após o vencimento em que o boleto poderá ser pago
+        CodigoAceite:
+          type: string
+          enum: ['A', 'N']
+          description: Informe A para Aceite e N para Não Aceite
+        TipoTitulo:
+          type: string
+          description: |-
+            Código para identificar o tipo de boleto de cobrança.
+            Domínio:
+            1 - 'CHEQUE'
+            2 - DUPLICATA MERCANTIL
+            3 - DUPLICATA MTIL POR INDICACAO
+            4 - DUPLICATA DE SERVICO
+            5 - DUPLICATA DE SRVC P/INDICACAO
+            6 - DUPLICATA RURAL
+            7 - LETRA DE CAMBIO
+            8 - NOTA DE CREDITO COMERCIAL
+            9 - NOTA DE CREDITO A EXPORTACAO
+            10 - NOTA DE CREDITO INDULTRIAL
+            11 - NOTA DE CREDITO RURAL
+            12 - NOTA PROMISSORIA
+            13 - NOTA PROMISSORIA RURAL
+            14 - TRIPLICATA MERCANTIL
+            15 - TRIPLICATA DE SERVICO
+            16 - NOTA DE SEGURO
+            17 - RECIBO
+            18 - FATURA
+            19 - NOTA DE DEBITO
+            20 - APOLICE DE SEGURO
+            21 - MENSALIDADE ESCOLAR
+            22 - PARCELA DE CONSORCIO
+            23 - DIVIDA ATIVA DA UNIAO
+            24 - DIVIDA ATIVA DE ESTADO
+            25 - DIVIDA ATIVA DE MUNICIPIO
+            31 - CARTAO DE CREDITO
+            32  - BOLETO PROPOSTA
+            99 - OUTROS
+        DescricaoTitulo:
+          type: string
+          description: Faça uma breve descrição sobre o título
+        PagamentoParcial:
+          type: string
+          description: Informe se será possível pagar o boleto de maneira parcial. S - Sim; N - Não;
+          default: 'N'
+        InfoBeneficiario:
+          type: string
+          description: Informações adicionais sobre o beneficiário
+        NossoNumero:
+          type: string
+          description: |-
+            Número de identificação do boleto (correspondente ao NOSSO NÚMERO), no formato STRING, com 20 dígitos, que deverá ser formatado da seguinte forma: “000” + (número do convênio com 7 dígitos) + (10 algarismos - se necessário, completar com zeros à esquerda).
+        TextoBoleto:
+          type: string
+          description: Mensagem impressa no boleto
+        DiasNegativacao:
+          type: integer
+          minimum: 1
+          description: Quantidade de dias para negativar depois do vencimento do boleto.
+        Email:
+          type: array
+          items:
+            type: string
+            format: email
+            example: ['ciclano@atemde.com.br', 'beltrano@idental.com.br']
+        JurosMora:
+          type: object
+          properties:
+            Tipo:
+              type: string
+              enum: [0, 1, 2, 3]
+              description: 'Valores possíveis: 0 - Dispensar; 1 - Valor dia atraso; 2 - Taxa mensal; 3 - Isento.'
+              default: 0
+            Porcentagem:
+              type: number
+              format: double
+            Valor:
+              type: number
+              format: double
+        Multa:
+          type: object
+          properties:
+            Tipo:
+              type: string
+              enum: [0, 1, 2]
+              description: 'Valores possíveis: 0 - Sem multa; 1 - Valor da multa; 2 - Percentual da multa'
+              default: 0
+            Data:
+              type: string
+              format: date
+            Porcentagem:
+              type: number
+              format: double
+            Valor:
+              type: number
+              format: double
+        Desconto:
+          type: object
+          properties:
+            Tipo:
+              type: string
+              enum: [0, 1, 2]
+              description: 'Valores possíveis: 0 - Sem desconto; 1 - Valor fixo até a data informada; 2 - Percentual até a data informada'
+            Expiracao:
+              type: string
+              format: date
+            Porcentagem:
+              type: number
+              format: double
+            Valor:
+              type: number
+              format: double
+        Pagador:
+          type: object
+          properties:
+            Tipo:
+              type: string
+              enum: [1, 2]
+              description: Informe 1 para Pessoa Física e 2 para Pessoa Jurídica
+              default: 1
+            Nome:
+              type: string
+              maximum: 30
+            Documento:
+              type: string
+              description: Informe o CPF para Pessoa Física e CNPJ para Pessoa Jurídica (Apenas números)
+            Estado:
+              type: string
+              maximum: 2
+              description: Informe a UF de seu Estado
+            Cidade:
+              type: string
+              maximum: 30
+            Bairro:
+              type: string
+              maximum: 30
+            Endereco:
+              type: string
+              maximum: 30
+            Cep:
+              type: string
+              pattern: /^(\d){8}$/
+            Telefone:
+              type: string
+          required:
+            - Nome
+            - Documento
+            - Estado
+            - Cidade
+            - Bairro
+            - Endereco
+            - Cep
+        Avalista:
+          type: object
+          properties:
+            Tipo:
+              type: string
+              enum: [1, 2]
+              description: Informe 1 para Pessoa Física e 2 para Pessoa Jurídica
+              default: 2
+            Documento:
+              type: string
+              description: Informe o CPF para Pessoa Física e CNPJ para Pessoa Jurídica (Apenas números)
+            RazaoSocial:
+              type: string
+      required:
+        - DataVencimento
+        - ValorBruto
+        - TipoTitulo
+    ResponseBoleto:
+      type: object
+      properties:
+        numero:
+          type: string
+        numeroCarteira:
+          type: integer
+        numeroVariacaoCarteira:
+          type: integer
+        codigoCliente:
+          type: integer
+        linhaDigitavel:
+          type: string
+        codigoBarraNumerico:
+          type: string
+        numeroContratoCobranca:
+          type: integer
+        beneficiário:
+          type: object
+          properties:
+            agencia:
+              type: integer
+            contaCorrente:
+              type: integer
+            tipoEndereco:
+              type: integer
+            logradouro:
+              type: string
+            bairro:
+              type: string
+            cidade:
+              type: string
+            codigoCidade:
+              type: integer
+            uf:
+              type: string
+              maximum: 2
+            cep:
+              type: integer
+            indicadorComprovacao:
+              type: string
+        quantidadeOcorrenciasNegativacao:
+          type: string
+        listaOcorenciasNegativacao:
+          type: array
+          items:
+            type: object
+            properties:
+              codigo:
+                type: string
+              descrição:
+                type: string
+    ShowBoleto:
+      type: object
+      properties:
+        numeroContratoCobranca:
+          type: string
+        codigoEstadoTituloCobranca:
+          type: integer
+        codigoTipoTituloCobranca:
+          type: integer
+        codigoModalidadeTitulo:
+          type: integer
+        codigoAceiteTituloCobranca:
+          type: string
+        codigoPrefixoDependenciaCobrador:
+          type: integer
+        codigoIndicadorEconomico:
+          type: integer
+        numeroTituloCedenteCobranca:
+          type: string
+        dataEmissaoTituloCobranca:
+          type: string
+          format: date
+        dataRegistroTituloCobranca:
+          type: string
+          format: date
+        dataVencimentoTituloCobranca:
+          type: string
+          format: date
+        valorOriginalTituloCobranca:
+          type: number
+          format: double
+        valorAtualTituloCobranca:
+          type: number
+          format: double
+        valorPagamentoParcialTitulo:
+          type: integer
+        valorAbatimentoTituloCobranca:
+          type: integer
+        percentualImpostoSobreOprFinanceirasTituloCobranca:
+          type: integer
+        valorImpostoSobreOprFinanceirasTituloCobranca:
+          type: integer
+        valorMoedaTituloCobranca:
+          type: integer
+        quantidadeParcelaTituloCobranca:
+          type: integer
+        dataBaixaAutomaticoTitulo:
+          type: string
+          format: date
+        textoCampoUtilizacaoCedente:
+          type: string
+        indicadorCobrancaPartilhadoTitulo:
+          type: string
+        valorMoedaAbatimentoTitulo:
+          type: integer
+        dataProtestoTituloCobranca:
+          type: string
+        numeroCarteiraCobranca:
+          type: integer
+        numeroVariacaoCarteiraCobranca:
+          type: integer
+        quantidadeDiaProtesto:
+          type: integer
+        quantidadeDiaPrazoLimiteRecebimento:
+          type: integer
+        dataLimiteRecebimentoTitulo:
+          type: string
+          format: date
+        indicadorPermissaoRecebimentoParcial:
+          type: string
+        textoCodigoBarrasTituloCobranca:
+          type: string
+        codigoOcorrenciaCartorio:
+          type: integer
+        indicadorDebitoCreditoTitulo:
+          type: integer
+        valorImpostoSobreOprFinanceirasRecebidoTitulo:
+          type: integer
+        valorAbatimentoTotal:
+          type: integer
+        valorCreditoCedente:
+          type: integer
+        codigoTipoLiquidacao:
+          type: integer
+        dataCreditoLiquidacao:
+          type: string
+        dataRecebimentoTitulo:
+          type: string
+        codigoPrefixoDependenciaRecebedor:
+          type: integer
+        codigoNaturezaRecebimento:
+          type: integer
+        codigoResponsavelAtualizacao:
+          type: string
+        codigoTipoBaixaTitulo:
+          type: integer
+        valorReajuste:
+          type: integer
+        valorOutroRecebido:
+          type: integer
+        codigoIndicadorEconomicoUtilizadoInadimplencia:
+          type: integer
+        sacado:
+          type: object
+          properties:
+            codigoTipoInscricaoSacado:
+              type: integer
+            numeroInscricaoSacadoCobranca:
+              type: string
+            nomeSacadoCobranca:
+              type: string
+            textoEnderecoSacadoCobranca:
+              type: string
+            nomeBairroSacadoCobranca:
+              type: string
+            nomeMunicipioSacadoCobranca:
+              type: string
+            siglaUnidadeFederacaoSacadoCobranca:
+              type: string
+            numeroCepSacadoCobranca:
+              type: string
+            valorPagoSacado:
+              type: integer
+            numeroIdentidadeSacadoTituloCobranca:
+              type: string
+        sacador:
+          type: object
+          properties:
+            codigoTipoInscricaoSacador:
+              type: integer
+            numeroInscricaoSacadorAvalista:
+              type: string
+            nomeSacadorAvalistaTitulo:
+              type: string
+        multa:
+          type: object
+          properties:
+            percentualMultaTitulo:
+              type: integer
+            valorMultaTituloCobranca:
+              type: integer
+            dataMultaTitulo:
+              type: string
+            valorMultaRecebido:
+              type: integer
+        desconto:
+          type: object
+          properties:
+            percentualDescontoTitulo:
+              type: integer
+            dataDescontoTitulo:
+              type: string
+            valorDescontoTitulo:
+              type: integer
+            codigoDescontoTitulo:
+              type: integer
+            valorDescontoUtilizado:
+              type: integer
+            segundoDesconto:
+              type: object
+              properties:
+                percentualSegundoDescontoTitulo:
+                  type: integer
+                dataSegundoDescontoTitulo:
+                  type: string
+                valorSegundoDescontoTitulo:
+                  type: integer
+                codigoSegundoDescontoTitulo:
+                  type: integer
+            terceiroDesconto:
+              type: object
+              properties:
+                percentualTerceiroDescontoTitulo:
+                  type: integer
+                dataTerceiroDescontoTitulo:
+                  type: string
+                valorTerceiroDescontoTitulo:
+                  type: integer
+                codigoTerceiroDescontoTitulo:
+                  type: integer
+        juroMora:
+          type: object
+          properties:
+            codigoTipoJuroMora:
+              type: integer
+            percentualJuroMoraTitulo:
+              type: integer
+            valorJuroMoraTitulo:
+              type: integer
+            dataJuroMoraTitulo:
+              type: string
+            valorJuroMoraRecebido:
+              type: integer
+    ListBoleto:
+      type: object
+      properties:
+        indicadorContinuidade:
+          type: string
+        quantidadeRegistros:
+          type: integer
+        proximoIndice:
+          type: integer
+        boletos:
+          type: array
+          items:
+            type: object
+            properties:
+              numeroBoletoBB:
+                type: string
+              dataRegistro:
+                type: string
+                format: date
+              dataVencimento:
+                type: string
+                format: date
+              valorOriginal:
+                type: integer
+              carteiraConvenio:
+                type: integer
+              variacaoCarteiraConvenio:
+                type: integer
+              estadoTituloCobranca:
+                type: string
+              contrato:
+                type: integer
+              dataMovimento:
+                type: string
+              valorAtual:
+                type: integer
+              valorPago:
+                type: integer
